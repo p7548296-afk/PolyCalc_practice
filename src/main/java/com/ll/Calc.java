@@ -2,12 +2,20 @@ package com.ll;
 
 public class Calc {
     public static int run(String expression) {
-        if (expression.contains("+")) {
-            String[] bits = expression.split("\\s*\\+\\s*");
-            return Integer.parseInt(bits[0]) + Integer.parseInt(bits[1]);
+        String[] expressionBits = expression.split(" ");
+
+        int result = Integer.parseInt(expressionBits[0]);
+
+        for (int i = 1; i < expressionBits.length; i += 2) {
+            int num = Integer.parseInt(expressionBits[i + 1]);
+
+            if ("+".equals(expressionBits[i])) {
+                result += num;
+            } else {
+                result -= num;
+            }
         }
 
-        String[] bits = expression.split("\\s*-\\s*");
-        return Integer.parseInt(bits[0]) - Integer.parseInt(bits[1]);
+        return result;
     }
 }
