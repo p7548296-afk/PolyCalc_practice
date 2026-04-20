@@ -6,15 +6,22 @@ public class Calc {
 
         int result = Integer.parseInt(expressionBits[0]);
 
-        for (int i = 1; i < expressionBits.length; i += 2) {
+        for (int i = 1; i < expressionBits.length; ) {
+            String op = expressionBits[i];
             int num = Integer.parseInt(expressionBits[i + 1]);
+            i += 2;
 
-            if ("+".equals(expressionBits[i])) {
+            while (i < expressionBits.length && "*".equals(expressionBits[i])) {
+                num *= Integer.parseInt(expressionBits[i + 1]);
+                i += 2;
+            }
+
+            if ("+".equals(op)) {
                 result += num;
-            } else if ("*".equals(expressionBits[i])) {
-                result *= num;
-            } else {
+            } else if ("-".equals(op)) {
                 result -= num;
+            } else {
+                result *= num;
             }
         }
 
