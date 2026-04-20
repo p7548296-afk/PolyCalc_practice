@@ -95,6 +95,11 @@ public class Calc {
 
         char current = expression.charAt(idx[0]);
 
+        if (current == '-') {
+            idx[0]++;
+            return subtract(0, parseFactor(expression, idx));
+        }
+
         if (current == '(') {
             idx[0]++;
             int value = parseExpression(expression, idx);
@@ -111,20 +116,13 @@ public class Calc {
     }
 
     private static int parseNumber(String expression, int[] idx) {
-        int sign = 1;
-
-        if (idx[0] < expression.length() && expression.charAt(idx[0]) == '-') {
-            sign = -1;
-            idx[0]++;
-        }
-
         if (idx[0] >= expression.length() || !Character.isDigit(expression.charAt(idx[0]))) {
             throw new IllegalArgumentException("Invalid number");
         }
 
         int value = parseDigits(expression, idx, 0);
 
-        return sign == 1 ? value : subtract(0, value);
+        return value;
     }
 
     private static int parseDigits(String expression, int[] idx, int acc) {
