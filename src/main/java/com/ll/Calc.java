@@ -11,6 +11,8 @@ public class Calc {
 
             if ("+".equals(expressionBits[i])) {
                 result += num;
+            } else if ("*".equals(expressionBits[i])) {
+                result *= num;
             } else {
                 result -= num;
             }
