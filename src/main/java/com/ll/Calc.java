@@ -2,12 +2,32 @@ package com.ll;
 
 public class Calc {
     public static int run(String expression) {
-        String[] expressionBits = expression.split(" \\+ ");
+        String[] tokens = expression.trim().split("\\s+");
+        int firstNumber = Integer.parseInt(tokens[0]);
 
-        int num1 = Integer.parseInt(expressionBits[0]);
-        int num2 = Integer.parseInt(expressionBits[1]);
-
-        return num1 + num2;
+        return eval(tokens, 1, firstNumber);
     }
 
+    private static int eval(String[] tokens, int idx, int acc) {
+        if (idx >= tokens.length) {
+            return acc;
+        }
+
+        String op = tokens[idx];
+        int nextNumber = Integer.parseInt(tokens[idx + 1]);
+
+        if ("+".equals(op)) {
+            return eval(tokens, idx + 2, acc + nextNumber);
+        }
+
+        return eval(tokens, idx + 2, subtract(acc, nextNumber));
+    }
+
+    private static int subtract(int num1, int num2) {
+        if (num2 == 0) {
+            return num1;
+        }
+
+        return subtract(num1 - 1, num2 - 1);
+    }
 }
