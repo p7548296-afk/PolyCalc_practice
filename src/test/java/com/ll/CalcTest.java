@@ -37,4 +37,10 @@ public class CalcTest {
     void t5() {
         assertThat(Calc.run("2 - 1")).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("3 - 1 == 2")
+    void t6() {
+        assertThat(Calc.run("3 - 1")).isEqualTo(2);
+    }
 }
