@@ -2,6 +2,7 @@ package com.ll;
 
 public class Calc {
     public static int run(String expression) {
+        expression = expression.replace("(", "").replace(")", "");
         String[] expressionBits = expression.split(" ");
 
         int result = Integer.parseInt(expressionBits[0]);
