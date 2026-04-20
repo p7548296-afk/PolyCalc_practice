@@ -2,79 +2,144 @@ package com.ll;
 
 public class Calc {
     public static int run(String expression) {
-        String trimmed = expression.trim();
-        if (trimmed.isEmpty()) {
+        String normalized = removeSpaces(expression, 0);
+        if (normalized.isEmpty()) {
             return 0;
         }
 
-        String[] tokens = trimmed.split("\\s+");
         int[] idx = {0};
-        int result = parseExpression(tokens, idx);
+        int result = parseExpression(normalized, idx);
 
-        if (idx[0] != tokens.length) {
-            throw new IllegalArgumentException("\uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uC5F0\uC0B0\uC790: " + tokens[idx[0]]);
+        if (idx[0] != normalized.length()) {
+            throw new IllegalArgumentException("\uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uC5F0\uC0B0\uC790: " + normalized.charAt(idx[0]));
         }
 
         return result;
     }
 
-    private static int parseExpression(String[] tokens, int[] idx) {
-        int left = parseTerm(tokens, idx);
-        return parseExpressionTail(tokens, idx, left);
+    private static String removeSpaces(String expression, int idx) {
+        if (idx >= expression.length()) {
+            return "";
+        }
+
+        char c = expression.charAt(idx);
+        String tail = removeSpaces(expression, idx + 1);
+
+        if (Character.isWhitespace(c)) {
+            return tail;
+        }
+
+        return c + tail;
     }
 
-    private static int parseExpressionTail(String[] tokens, int[] idx, int acc) {
-        if (idx[0] >= tokens.length) {
+    private static int parseExpression(String expression, int[] idx) {
+        int left = parseTerm(expression, idx);
+        return parseExpressionTail(expression, idx, left);
+    }
+
+    private static int parseExpressionTail(String expression, int[] idx, int acc) {
+        if (idx[0] >= expression.length()) {
             return acc;
         }
 
-        String op = tokens[idx[0]];
+        char op = expression.charAt(idx[0]);
 
-        if ("+".equals(op)) {
+        if (op == '+') {
             idx[0]++;
-            int right = parseTerm(tokens, idx);
-            return parseExpressionTail(tokens, idx, acc + right);
+            int right = parseTerm(expression, idx);
+            return parseExpressionTail(expression, idx, acc + right);
         }
 
-        if ("-".equals(op)) {
+        if (op == '-') {
             idx[0]++;
-            int right = parseTerm(tokens, idx);
-            return parseExpressionTail(tokens, idx, subtract(acc, right));
+            int right = parseTerm(expression, idx);
+            return parseExpressionTail(expression, idx, subtract(acc, right));
         }
 
-        return acc;
-    }
-
-    private static int parseTerm(String[] tokens, int[] idx) {
-        int left = parseFactor(tokens, idx);
-        return parseTermTail(tokens, idx, left);
-    }
-
-    private static int parseTermTail(String[] tokens, int[] idx, int acc) {
-        if (idx[0] >= tokens.length) {
+        if (op == ')') {
             return acc;
         }
 
-        String op = tokens[idx[0]];
-
-        if ("*".equals(op)) {
-            idx[0]++;
-            int right = parseFactor(tokens, idx);
-            return parseTermTail(tokens, idx, multiply(acc, right));
-        }
-
-        return acc;
+        throw new IllegalArgumentException("\uC9C0\uC6D0\uD558\uC9C0 \uC54A\uB294 \uC5F0\uC0B0\uC790: " + op);
     }
 
-    private static int parseFactor(String[] tokens, int[] idx) {
-        if (idx[0] >= tokens.length) {
+    private static int parseTerm(String expression, int[] idx) {
+        int left = parseFactor(expression, idx);
+        return parseTermTail(expression, idx, left);
+    }
+
+    private static int parseTermTail(String expression, int[] idx, int acc) {
+        if (idx[0] >= expression.length()) {
+            return acc;
+        }
+
+        char op = expression.charAt(idx[0]);
+
+        if (op == '*') {
+            idx[0]++;
+            int right = parseFactor(expression, idx);
+            return parseTermTail(expression, idx, multiply(acc, right));
+        }
+
+        if (op == '+' || op == '-' || op == ')') {
+            return acc;
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    private static int parseFactor(String expression, int[] idx) {
+        if (idx[0] >= expression.length()) {
             throw new IllegalArgumentException("Invalid expression");
         }
 
-        int value = Integer.parseInt(tokens[idx[0]]);
-        idx[0]++;
+        char current = expression.charAt(idx[0]);
 
-        return value;
+        if (current == '(') {
+            idx[0]++;
+            int value = parseExpression(expression, idx);
+
+            if (idx[0] >= expression.length() || expression.charAt(idx[0]) != ')') {
+                throw new IllegalArgumentException("Invalid expression");
+            }
+
+            idx[0]++;
+            return value;
+        }
+
+        return parseNumber(expression, idx);
+    }
+
+    private static int parseNumber(String expression, int[] idx) {
+        int sign = 1;
+
+        if (idx[0] < expression.length() && expression.charAt(idx[0]) == '-') {
+            sign = -1;
+            idx[0]++;
+        }
+
+        if (idx[0] >= expression.length() || !Character.isDigit(expression.charAt(idx[0]))) {
+            throw new IllegalArgumentException("Invalid number");
+        }
+
+        int value = parseDigits(expression, idx, 0);
+
+        return sign == 1 ? value : subtract(0, value);
+    }
+
+    private static int parseDigits(String expression, int[] idx, int acc) {
+        if (idx[0] >= expression.length()) {
+            return acc;
+        }
+
+        char c = expression.charAt(idx[0]);
+        if (!Character.isDigit(c)) {
+            return acc;
+        }
+
+        idx[0]++;
+        int next = acc * 10 + (c - '0');
+        return parseDigits(expression, idx, next);
     }
 
     private static int subtract(int num1, int num2) {
