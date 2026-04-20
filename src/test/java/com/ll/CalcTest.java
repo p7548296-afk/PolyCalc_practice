@@ -140,4 +140,39 @@ public class CalcTest {
         assertThat(Calc.run("((20 + 20)) + 20")).isEqualTo(60);
     }
 
+    @Test
+    @DisplayName("(10 + 20) * 3 == 90")
+    void t23() {
+        assertThat(Calc.run("(10 + 20) * 3")).isEqualTo(90);
+    }
+
+    @Test
+    @DisplayName("10 + (10 + 5) == 25")
+    void t24() {
+        assertThat(Calc.run("10 + (10 + 5)")).isEqualTo(25);
+    }
+
+    @Test
+    @DisplayName("-(10 + 5) == -15")
+    void t25() {
+        assertThat(Calc.run("-(10 + 5)")).isEqualTo(-15);
+    }
+
+    @Test
+    @DisplayName("-(8 + 2) * -(7 + 3) + 5 == 105")
+    void t26() {
+        assertThat(Calc.run("-(8 + 2) * -(7 + 3) + 5")).isEqualTo(105);
+    }
+
+    @Test
+    @DisplayName("5 - (1 + 5) == -1")
+    void t27() {
+        assertThat(Calc.run("5 - (1 + 5)")).isEqualTo(-1);
+    }
+
+    @Test
+    @DisplayName("3 * 1 + (1 - (4 * 1 - (1 - 1))) == 0")
+    void t28() {
+        assertThat(Calc.run("3 * 1 + (1 - (4 * 1 - (1 - 1)))")).isEqualTo(0);
+    }
 }

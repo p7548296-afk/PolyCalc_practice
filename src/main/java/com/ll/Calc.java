@@ -2,9 +2,20 @@ package com.ll;
 
 public class Calc {
     public static int run(String expression) {
-        expression = expression.replace("(", "").replace(")", "");
-        String[] expressionBits = expression.split(" ");
+        expression = expression.trim();
 
+        while (expression.contains("(")) {
+            int open = expression.lastIndexOf('(');
+            int close = expression.indexOf(')', open);
+            int value = evalFlat(expression.substring(open + 1, close));
+            expression = expression.substring(0, open) + value + expression.substring(close + 1);
+        }
+
+        return evalFlat(expression);
+    }
+
+    private static int evalFlat(String expression) {
+        String[] expressionBits = expression.trim().split("\\s+");
         int result = Integer.parseInt(expressionBits[0]);
 
         for (int i = 1; i < expressionBits.length; ) {
